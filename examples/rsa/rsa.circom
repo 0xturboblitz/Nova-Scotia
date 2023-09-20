@@ -2,16 +2,12 @@ pragma circom 2.0.3;
 
 include "./fp.circom";
 
-
 template RSA(n, k) {
     signal input step_in[2*k];  // base + modulus
     signal output step_out[2*k];    // Output after one RSA exponentiation step
     
-    // signal input modulus[k];  // Additional input to set the modulus
-    // unused for now
+    signal input intermediate_result[k];
 
-    signal input iiiii;  // Additional input 
-    
     // Instantiate the necessary components
     component doubler = FpMul(n, k);
     
@@ -25,6 +21,13 @@ template RSA(n, k) {
         doubler.a[j] <== step_in[j];
         doubler.b[j] <== step_in[j];
     }
+
+    // check the intermediate result
+    for (var j = 0; j < k; j++) {
+        intermediate_result[j] === doubler.out[j];
+        log(doubler.out[j]);
+    }
+    log("a");
     
     // Assign output
     for (var j = 0; j < k; j++) {
