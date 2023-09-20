@@ -19,21 +19,91 @@ fn run_test(circuit_filepath: String, witness_gen_filepath: String) {
         witness_gen_filepath,
         std::any::type_name::<G1>()
     );
-    let iteration_count = 5;
+    let iteration_count = 16;
     let root = current_dir().unwrap();
 
     let circuit_file = root.join(circuit_filepath);
     let r1cs = load_r1cs::<G1, G2>(&FileLocation::PathBuf(circuit_file));
     let witness_generator_file = root.join(witness_gen_filepath);
 
+    // let modulus = [ 7393733765198893753,  15021702840859770572,
+    //   7791099558876688176,  13358531286313426663,
+    //   220964654821867891,   12127583786530579557,
+    //   4284074925254610676,  12791660227890158665,
+    //   5287463645693083792,  14146517856241052685,
+    //   1551382107775512883,  5583525925678336154,
+    //   630770580733901677,   11344036437445967560,
+    //   5442456374462632955,  8824600348477149085,
+    //   16013047011490152554, 881740173685966498,
+    //   17349640094304204496, 4107271532411575765,
+    //   7485350056758160279,  2177551449296720977,
+    //   7677962950361984035,  2086588424853660202,
+    //   14215491066227096835, 1794722798567678506,
+    //   14165395421177685934, 11666076404411987464,
+    //   2913723460956784920,  9122382708731008767,
+    //   2332020847133510385,  14440780336709191350
+    //   ];
+
+    // let converted = <[Fq; 32] as TryFrom<Vec<Fq>>>::try_into(
+    //   modulus.iter()
+    //       .map(|&num| F::<G1>::from(num))
+    //       .collect::<Vec<_>>()
+    // );
+    
     let mut private_inputs = Vec::new();
     for i in 0..iteration_count {
         let mut private_input = HashMap::new();
-        private_input.insert("adder".to_string(), json!(i));
+        private_input.insert("iiiii".to_string(), json!(i));
         private_inputs.push(private_input);
     }
 
-    let start_public_input = [F::<G1>::from(10), F::<G1>::from(10)];
+
+
+    // step_in, modulus
+
+    let start_public_input_ints = [
+      3421439721559149319,  11354732770515695799,
+      4227317210642278584,  14606982623262455573,
+      17546405983876959373, 10259133504878202111,
+      4082821270767945977,  17449369643899344788,
+      7746950233964549303,  13134713490114596675,
+      17916351255307472858, 2968229864166344234,
+      12986871368453415689, 2127338031857367579,
+      9597868595081610645,  16048860333519980468,
+      12889691138810385032, 13165199160586510530,
+      1534606364301995300,  1189102230710267931,
+      15702306784120788195, 491332807642141714,
+      15837352471120481694, 612509762454378322,
+      11280499346254295604, 6529152347632750885,
+      2969316828717622690,  12186249902756252792,
+      8972631233870835705,  11845974461683939086,
+      1978506114271498453,  4438562012349718266,
+  
+      7393733765198893753,  15021702840859770572,
+      7791099558876688176,  13358531286313426663,
+      220964654821867891,   12127583786530579557,
+      4284074925254610676,  12791660227890158665,
+      5287463645693083792,  14146517856241052685,
+      1551382107775512883,  5583525925678336154,
+      630770580733901677,   11344036437445967560,
+      5442456374462632955,  8824600348477149085,
+      16013047011490152554, 881740173685966498,
+      17349640094304204496, 4107271532411575765,
+      7485350056758160279,  2177551449296720977,
+      7677962950361984035,  2086588424853660202,
+      14215491066227096835, 1794722798567678506,
+      14165395421177685934, 11666076404411987464,
+      2913723460956784920,  9122382708731008767,
+      2332020847133510385,  14440780336709191350
+    ];
+
+    // let start_public_input = [F::<G1>::from(10), F::<G1>::from(10)];
+    let start_public_input: [F<G1>; 64] = start_public_input_ints
+    .iter()
+    .map(|&num| F::<G1>::from(num))
+    .collect::<Vec<_>>()
+    .try_into()
+    .unwrap();
 
     let pp: PublicParams<G1, G2, _, _> = create_public_params(r1cs.clone());
 
@@ -113,12 +183,10 @@ fn run_test(circuit_filepath: String, witness_gen_filepath: String) {
 }
 
 fn main() {
-    let group_name = "pasta";
-
-    let circuit_filepath = format!("examples/toy/{}/toy.r1cs", group_name);
+    let circuit_filepath = format!("examples/rsa/rsa.r1cs");
     for witness_gen_filepath in [
-        // format!("examples/toy/{}/toy_cpp/toy", group_name),
-        format!("examples/toy/{}/toy_js/toy.wasm", group_name),
+        // format!("examples/rsa/{}/rsa_cpp/rsa", group_name),
+        format!("examples/rsa/rsa_js/rsa.wasm"),
     ] {
         run_test(circuit_filepath.clone(), witness_gen_filepath);
     }

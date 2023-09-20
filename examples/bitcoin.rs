@@ -30,7 +30,7 @@ fn bench(iteration_count: usize, per_iteration_count: usize) -> (Duration, Durat
     let circuit_file = root.join("examples/bitcoin/circom/bitcoin_benchmark.r1cs");
     let r1cs = load_r1cs::<G1, G2>(&FileLocation::PathBuf(circuit_file));
     let witness_generator_file =
-        root.join("examples/bitcoin/circom/bitcoin_benchmark_cpp/bitcoin_benchmark");
+        root.join("examples/bitcoin/circom/bitcoin_benchmark_js/bitcoin_benchmark.wasm");
 
     // load serde json
     let btc_blocks: Blocks =
